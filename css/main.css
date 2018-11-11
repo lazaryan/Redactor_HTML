@@ -1,0 +1,44 @@
+/* # Setup devices width */
+/* # Variables for mobile first approach and strict ranges */
+* {
+  margin: 0;
+  padding: 0; }
+
+#body {
+  background-color: #353535; }
+
+.header {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+     -moz-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  background-color: #1C1C1C; }
+  .header__logo {
+    color: #fff;
+    font-size: 30px;
+    padding-left: 30px;
+    font-weight: bold;
+    line-height: 60px; }
+
+.main {
+  margin-top: 30px; }
+
+.wrapper {
+  width: 80%;
+  margin: auto; }
+
+.screen {
+  background-color: #FFFFFF; }
+  .screen__frame-wrapper {
+    min-height: 500px; }

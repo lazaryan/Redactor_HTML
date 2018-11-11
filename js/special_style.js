@@ -1,13 +1,12 @@
+'use strict';
+
 /**
  * Загрузка на страницу всех необходимых стилей 
  */
-;!function() {
-	const style = 
-	`
-		.el_action {border: 3px solid #DAF449}
-	`;
+;!function () {
+	var style = '\n\t\t.el_action {border: 3px solid #DAF449}\n\t';
 
-	let style_block = document.createElement('style');
+	var style_block = document.createElement('style');
 	style_block.innerHTML = style;
 	document.querySelector('body').appendChild(style_block);
 }();
