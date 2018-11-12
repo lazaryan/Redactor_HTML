@@ -10,7 +10,7 @@ Action.prototype = {
 		if (!this.el) {
 			this.el = el;
 			this.action();
-		} else {
+		} else if( !setting.el.contains(el)){
 			this.clear();
 
 			this.el = el;
@@ -19,21 +19,30 @@ Action.prototype = {
 	},
 	addStyle () {
 		this.el.classList.add('el_action');
+
+		if(this.getStyle(this.el).position == 'static') {
+			this.el.classList.add('el__action-relative');
+		}
 	},
 	removeStyle () {
 		this.el.classList.remove('el_action');
+		this.el.classList.remove('el__action-relative');
 	},
 	action () {
 		this.addStyle();
-		this.el.setAttribute('contentEditable', 'true');
+		setting.init(this.el);
 	},
 	clear () {
 		this.removeStyle();
+		setting.removeMenu();
 		this.el.removeAttribute('contentEditable');
 
 		this.el = undefined;
 	},
 	isBlock (el) {
-		return this.el == el ? true : this.el ? false : true;
+		return this.el == el ? true : this.el  && !setting.nav.contains(el) ? false : true;
+	},
+	getStyle (el) {
+		return window.getComputedStyle( el, null );
 	}
 }

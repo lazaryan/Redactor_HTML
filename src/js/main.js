@@ -1,5 +1,5 @@
+let setting = new Setting();
 let action = new Action();
-
 /**
  * Главный объект
  */
