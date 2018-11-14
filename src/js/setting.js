@@ -16,6 +16,11 @@ function Setting () {
 			message: 'Изменить стили текста',
 			label: './img/paint-brush.svg',
 			action: this.changeStyleText.bind(this)
+		},
+		saveChange: {
+			message: 'Сохранить',
+			label: './img/paint-brush.svg',
+			action: this.saveChange.bind(this)
 		}
 	}
 }
@@ -44,6 +49,7 @@ Setting.prototype = {
 	createBlock () {
 		let block = document.createElement('div');
 		block.classList = 'el__action-setting';
+		block.id = 'settingId';
 		
 		for(let key in this.buttons) {
 			block.appendChild(this.createButtons(key, this.buttons[key].action));
@@ -101,5 +107,16 @@ Setting.prototype = {
 			}
 			this.nav.removeChild(this.nav.lastChild);
 		}
+	},
+	saveChange () {
+		let doc = document.createElement('html');
+		doc.innerHTML = document.querySelector('html').innerHTML;
+		doc.querySelector('.el_action').classList.remove('el_action');
+		doc.querySelector('.el__action-relative').classList.remove('el__action-relative');
+		doc.querySelector('#settingId').parentNode.removeChild(doc.querySelector('#settingId'));
+		doc.querySelector('#specialStyle').parentNode.removeChild(doc.querySelector('#specialStyle'));
+
+
+		ajax.save(doc.innerHTML);
 	}
 }

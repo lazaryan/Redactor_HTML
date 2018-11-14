@@ -12,6 +12,7 @@
 	`;
 
 	let style_block = document.createElement('style');
+	style_block.id= 'specialStyle';
 	style_block.innerHTML = style;
 	document.querySelector('body').appendChild(style_block);
 }();

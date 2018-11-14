@@ -1,3 +1,4 @@
+let ajax = new myAjax();
 let setting = new Setting();
 let action = new Action();
 /**
