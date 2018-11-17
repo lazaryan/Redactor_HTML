@@ -1,0 +1,24 @@
+.redactorHTML__nav {
+  display: block;
+  position: fixed;
+  bottom: 10vh;
+  margin-left: 50%;
+  -webkit-transform: translateX(-50%);
+     -moz-transform: translateX(-50%);
+      -ms-transform: translateX(-50%);
+       -o-transform: translateX(-50%);
+          transform: translateX(-50%);
+  padding: 6px;
+  -webkit-border-radius: 5px;
+          border-radius: 5px;
+  background-color: #9AEEAA; }
+
+.redactorHTML__button {
+  border: none;
+  background-color: #83A9FF;
+  padding: 5px; }
+  .redactorHTML__button_action {
+    background-color: #FF9D83; }
+
+.redactorHTML__action-block {
+  border: 5px solid #F2FC55; }
