@@ -48,7 +48,7 @@ var Action = function () {
 	}, {
 		key: 'disactiveBlock',
 		value: function disactiveBlock() {
-			this.block.classList.remove('redactorHTML__action-block');
+			if (this.block) this.block.classList.remove('redactorHTML__action-block');
 
 			this.block = undefined;
 		}
@@ -63,18 +63,17 @@ var Action = function () {
 			this.redactorText.classList = 'redactorHTML__redactor';
 			this.redactorText.id = 'redactorText';
 
-			var textarea = document.createElement('textarea');
-			textarea.id = 'redactorTextarea';
-
-			textarea.innerHTML = this.getTextBlock();
-
-			this.redactorText.appendChild(textarea);
+			this.redactorText.innerHTML = this.redactorTemplate;
 			nav.appendChild(this.redactorText);
+
+			var textarea = this.redactorText.querySelector('textarea');
 
 			if (textarea.innerHTML == 'блок имеет дочерние элементы!!!' || textarea.innerHTML == 'блок не выбран') {
 				textarea.disabled = 'disabled';
 				return;
 			}
+
+			this.addStyleForINput();
 
 			textarea.addEventListener('keyup', function () {
 				return _this.changeTextBlock();
@@ -102,21 +101,32 @@ var Action = function () {
 	}, {
 		key: 'disactiveRedactor',
 		value: function disactiveRedactor() {
+			this.activeStyle();
 			this._redactor = false;
 
 			this.redactorText.parentNode.removeChild(this.redactorText);
 			this.redactorText = undefined;
 		}
 	}, {
+		key: 'activeStyle',
+		value: function activeStyle() {
+			var inputs = this.redactorText.querySelectorAll('input');
+
+			for (var i = 0; i < inputs.length; i++) {
+				if (inputs[i].value) {
+					this.block.style[inputs[i].dataset.style] = inputs[i].value;
+				}
+			}
+		}
+	}, {
 		key: 'save',
 		value: function save() {
-			var path = window.location.pathname;
+			this.activeStyle();
 
+			var path = window.location.pathname;
 			if (path == '\/') path = 'index.html';
 
 			var text = this.getTextFiles();
-
-			console.log(text);
 
 			var xhr = new XMLHttpRequest();
 
@@ -129,9 +139,7 @@ var Action = function () {
 
 				if (xhr.status != 200) {
 					console.warn(xhr.status + ': ' + xhr.statusText);
-				} else {
-					console.log(xhr);
-				}
+				} else {}
 			};
 		}
 	}, {
@@ -152,6 +160,48 @@ var Action = function () {
 			}
 
 			return block.innerHTML;
+		}
+	}, {
+		key: 'addStyleForINput',
+		value: function addStyleForINput() {
+			var inputs = this.redactorText.querySelectorAll('input');
+
+			for (var i = 0; i < inputs.length; i++) {
+				if (this.block.style[inputs[i].dataset.style]) {
+					inputs[i].value = this.block.style[inputs[i].dataset.style];
+				}
+			}
+		}
+	}, {
+		key: 'redactorTemplate',
+		get: function get() {
+			return '\n\t\t\t<nav>' + this.redactorNav + '</nav>\n\t\t\t<textarea id="redactorTextarea">' + this.getTextBlock() + '</textarea>\n\t\t';
+		}
+	}, {
+		key: 'redactorNav',
+		get: function get() {
+			return this.redactorElements.reduce(function (list, el) {
+				list += '<div>\n\t\t\t\t\t\t<label>' + el.title + ': </label>\n\t\t\t\t\t\t' + (el.type == 'input' ? '<input type="text" data-style="' + el.style + '" />' : '') + '\n\t\t\t\t\t</div>';
+
+				return list;
+			}, '');
+		}
+	}, {
+		key: 'redactorElements',
+		get: function get() {
+			return [{
+				title: 'colorText',
+				style: 'color',
+				type: 'input'
+			}, {
+				title: 'bgc',
+				style: 'backgroundColor',
+				type: 'input'
+			}, {
+				title: 'fsz',
+				style: 'font-size',
+				type: 'input'
+			}];
 		}
 	}]);
 
