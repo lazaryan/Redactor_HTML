@@ -38,7 +38,7 @@ class Action {
 	}
 
 	disactiveBlock () {
-		this.block.classList.remove('redactorHTML__action-block');
+		if (this.block) this.block.classList.remove('redactorHTML__action-block');
 
 		this.block = undefined;
 	}
@@ -50,19 +50,18 @@ class Action {
 		this.redactorText.classList = 'redactorHTML__redactor';
 		this.redactorText.id = 'redactorText';
 
-		let textarea = document.createElement('textarea');
-		textarea.id = 'redactorTextarea';
-
-		textarea.innerHTML = this.getTextBlock();
-
-		this.redactorText.appendChild(textarea);
+		this.redactorText.innerHTML = this.redactorTemplate;
 		nav.appendChild(this.redactorText);
+
+		let textarea = this.redactorText.querySelector('textarea');
 
 		if (textarea.innerHTML == 'блок имеет дочерние элементы!!!' ||
 			textarea.innerHTML == 'блок не выбран') {
 			textarea.disabled = 'disabled';
 			return;
 		}
+
+		this.addStyleForINput();
 
 		textarea.addEventListener('keyup', () => this.changeTextBlock());
 		textarea.addEventListener('input', () => this.changeTextBlock());
@@ -85,20 +84,30 @@ class Action {
 	}
 
 	disactiveRedactor () {
+		this.activeStyle();
 		this._redactor = false;
 
 		this.redactorText.parentNode.removeChild(this.redactorText);
 		this.redactorText = undefined;
 	}
 
-	save () {
-		let path = window.location.pathname;
+	activeStyle () {
+		let inputs = this.redactorText.querySelectorAll('input');
 
+		for (let i = 0; i < inputs.length; i++) {
+			if (inputs[i].value) {
+				this.block.style[inputs[i].dataset.style] = inputs[i].value;
+			}
+		}
+	}
+
+	save () {
+		this.activeStyle();
+
+		let path = window.location.pathname;
 		if(path == '\/') path = 'index.html';
 
 		let text = this.getTextFiles();
-
-		console.log(text);
 
 		let xhr = new XMLHttpRequest();
 
@@ -111,9 +120,7 @@ class Action {
 
   			if (xhr.status != 200) {
     			console.warn(xhr.status + ': ' + xhr.statusText);
-  			} else {
-  				console.log(xhr);
-  			}
+  			} else {}
 		}
 	}
 
@@ -133,5 +140,53 @@ class Action {
 		}
 
 		return block.innerHTML;
+	}
+
+	addStyleForINput () {
+		let inputs = this.redactorText.querySelectorAll('input');
+
+		for (let i = 0; i < inputs.length; i++) {
+			if (this.block.style[inputs[i].dataset.style]) {
+				inputs[i].value = this.block.style[inputs[i].dataset.style]
+			}
+		}
+	}
+
+	get redactorTemplate () {
+		return `
+			<nav>${this.redactorNav}</nav>
+			<textarea id="redactorTextarea">${this.getTextBlock()}</textarea>
+		`
+	}
+
+	get redactorNav () {
+		return this.redactorElements.reduce((list, el) => {
+			list += `<div>
+						<label>${el.title}: </label>
+						${el.type == 'input' ? `<input type="text" data-style="${el.style}" />` : ''}
+					</div>`;
+
+			return list;		
+		}, '');
+	}
+
+	get redactorElements () {
+		return [
+			{
+				title: 'colorText',
+				style: 'color',
+				type: 'input'
+			},
+			{
+				title: 'bgc',
+				style: 'backgroundColor',
+				type: 'input'
+			},
+			{
+				title: 'fsz',
+				style: 'font-size',
+				type: 'input'
+			}
+		]
 	}
 }
