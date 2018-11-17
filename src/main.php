@@ -1,6 +1,6 @@
 <?php
 # файл перезапись файла
-$file = './index.html';
+$file = $_POST['path'];
 
 $text_body = $_POST['html'];
 $text = '<!DOCTYPE html>';
