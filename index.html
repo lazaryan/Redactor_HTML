@@ -1,27 +1,128 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta   charset="UTF-8" />
-	<meta   name="viewport"
-        	content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
-	<meta   http-equiv="X-UA-Compatible"content="ie=edge" />
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, 
+                    initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-	<title>Redactor HTML</title>
+    <title>Harry Pother</title>
 
-	<link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
-<body id="body">
-	<h1 class="header__logo">Заголовок</h1>
-	<main class="main">
-		<div class="wrapper">
-			<div class="screen screen__frame-wrapper">
-				<h1>Тест заголовок</h1>
-			</div>
-		</div>
-	</main>
+<body class="body">
+    <section class="section">
+        <div class="delivery">
+            <div class="title-block">
+                <h1 class="text-uppercase text-white title">доставка заказа</h1>
+                <p class="text-white title_small">Мы доставим выши заказы очень быстро и надежно</p>
+            </div>
+            <div class="container">
+                <div class="row justify-content-around">
+                <div class="col-8 col-sm-6 col-md-5 rounded delivery__card">
+                    <p class="text-uppercase d-flex align-items-center font-weight-bold card__text card__text_bold card__text_shard">Доставка по Москве</p>
+                    <p class="card__text card__text_line-height_ziro card__text_margin">стоимость — 300 руб.</p>
+                    <p class="text-uppercase d-flex align-items-center font-weight-bold card__text card__text_bold card__text_shard">Срочная доставка в день заказа</p>
+                    <p class="card__text card__text_line-height_ziro card__text_margin">стоимость — 400 руб. (2-4 часа)</p>
+                    <p class="text-uppercase d-flex align-items-center font-weight-bold card__text card__text_bold card__text_shard">Доставка за пределы МКАД</p>
+                    <p class="card__text card__text_line-height_ziro card__text_margin">от стоимость — 400 руб. (до 10 км)</p>
+                </div>
+                <div class="col-8 col-sm-6 col-md-5 rounded delivery__card">
+                    <p class="text-uppercase d-flex align-items-center font-weight-bold card__text card__text_margin card__text_bold card__text_shard">Доставка в другие города России</p>
+                    <p class="card__text card__text_margin">Мы отправляем товары во все регионы почтой России или ускоренной службой <abbr>EMS</abbr>,<abbr>СДЭК</abbr></p>
+                    <p class="card__text card__text_margin">Стоимость доставки — от 300 руб. (рассчитывается индивидуально)</p>
+                    <p class="card__text card__text_margin">Возможна оплата наложенным платежом или по полной предоплате.</p>
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="w-100 order">
+            <div class="title-block">
+                <h1 class="text-uppercase title">Как заказать товар</h1>
+                <p class="title_small">Это сделать проще простого!</p>
+            </div>
+            <div class="container">
+                <div class="row justify-content-around">
+                <div class="step">
+                    <img class="mx-auto d-block order__images" src="./img/Step5.png" alt="Step">
+                    <button class="border-0 rounded order__text order__button">Оставляете заявку</button>
+                </div>
+                <div class="rounded order-line"></div>
+                <div class="step">
+                    <img class="mx-auto d-block order__images" src="./img/Step4.png" alt="Step">
+                    <div class="order__text">Мы связываемся с вами</div>
+                </div>
+                <div class="rounded order-line"></div>
+                <div class="step">
+                    <img class="mx-auto d-block order__images" src="./img/Step3.png" alt="Step">
+                    <div class="order__text">Отправляем ваш заказ</div>
+                </div>
+                <div class="rounded order-line"></div>
+                <div class="step">
+                    <img class="mx-auto d-block order__images" src="./img/Step2.png" alt="Step">
+                    <div class="order__text">Вы оплачиваете заказ при получении</div>
+                </div>
+                <div class="rounded order-line"></div>
+                <div class="step">
+                    <img class="mx-auto d-block order__images" src="./img/Step1.png" alt="Step">
+                    <div class="order__text">Вы радуетесь своей обновке</div>
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="feedbacks">
+            <div class="title-block">
+                <h1 class="text-uppercase text-white title">Отзывы клиентов</h1>
+                <p class="text-white title_small">Они остались в восторге от нашего сервиса!</p>
+            </div>
+            <div class="js-client">
+                <div class="rounded client">
+                    <img class="mx-auto d-block rounded-circle client__photo" src="./img/Layer%20580.png">
+                    <h2 class="client__name">Андрей Петухов</h2>
+                    <p class="client__description">Я очень доволен качеством этой компании. Мне помогли с выбором, указав на самый оптимальный вариант. Доставили заказ в срок и даже сделали небольшой бонус. Я очень доволен и буду заказывать еще!</p>
+                </div>
+                <div class="rounded client">
+                    <img class="mx-auto d-block rounded-circle client__photo" src="./img/Layer%20596.png">
+                    <h2 class="client__name">Иван Корнийчук</h2>
+                    <p class="client__description">Я очень доволен качеством этойfghfghfghgfhgfhgfhgfhgfhfghfghfghfghfhf компании. Мне помогли с выбором, указав на самый оптимальный вариант. Доставили заказ в срок и даже сделали небольшой бонус. Я очень доволен и буду заказывать еще!</p>
+                </div>
+                <div class="rounded client">
+                    <img class="mx-auto d-block rounded-circle client__photo" src="./img/Layer%20580.png">
+                    <h2 class="client__name">Андрей Петухов</h2>
+                    <p class="client__description">Я очень доволен качеством этой компании. Мне помогли с выбором, указав на самый оптимальный вариант. Доставили заказ в срок и даже сделали небольшой бонус. Я очень доволен и буду заказывать еще!</p>
+                </div>
+                <div class="rounded client">
+                    <img class="mx-auto d-block rounded-circle client__photo" src="./img/Layer%20597.png">
+                    <h2 class="client__name">Ольга Варламова</h2>
+                    <p class="client__description">Я очень доволен качеством этой компании. Мне помогли с выбором, указав на самый оптимальный вариант. Доставили заказ в срок и даже сделали небольшой бонус. Я очень доволен и буду заказывать еще!</p>
+                </div>
+                <div class="rounded client">
+                    <img class="mx-auto d-block rounded-circle client__photo" src="./img/Layer%20580.png">
+                    <h2 class="client__name">Андрей Петухов</h2>
+                    <p class="client__description">Я очень доволен качеством этой компании. Мне помогли с выбором, указав на самый оптимальный вариант. Доставили заказ в срок и даже сделали небольшой бонус. Я очень доволен и буду заказывать еще!</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-	<script src="js/action.js"></script>
-	<script src="js/nav.js"></script>
-	<script src="js/redactor.js"></script>
-</body>
-</html>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('.js-client').slick({
+                infinite: true,
+                speed: 300,
+                slidesToShow: 1,
+                centerMode: true,
+                variableWidth: true
+            });
+        });
+    </script>
+
+    <script src="js/action.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/redactor.js"></script>
+
+
+</body></html>
