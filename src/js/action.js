@@ -25,22 +25,23 @@ class Action {
 		}
 
 		if (this._redactor) {
-			let textarea = this.redactorText.querySelector('textarea');
-			textarea.innerHTML = this.getTextBlock();
+			this.redactorText.innerHTML = this.redactorTemplate;
 
-			if (textarea.innerHTML == 'блок имеет дочерние элементы!!!' ||
-				textarea.innerHTML == 'блок не выбран') {
-				textarea.disabled = 'disabled';
-			} else {
-				textarea.removeAttribute('disabled');
-			}
+			this.addEventTextarea();
+			this.addEventButton();
 		}
 	}
 
 	disactiveBlock () {
-		if (this.block) this.block.classList.remove('redactorHTML__action-block');
+		if (this.block) {
+			this.block.classList.remove('redactorHTML__action-block');
 
-		this.block = undefined;
+			this.block = undefined;
+
+			if (this.redactorText) {
+				this.redactorText.innerHTML = this.redactorTemplate;
+			}
+		}
 	}
 
 	redactor (nav) {
@@ -53,18 +54,37 @@ class Action {
 		this.redactorText.innerHTML = this.redactorTemplate;
 		nav.appendChild(this.redactorText);
 
+		this.addEventTextarea();
+		this.addEventButton();
+	}
+
+	addEventTextarea () {
 		let textarea = this.redactorText.querySelector('textarea');
+		if (textarea){
+			this.addStyleForINput();
 
-		if (textarea.innerHTML == 'блок имеет дочерние элементы!!!' ||
-			textarea.innerHTML == 'блок не выбран') {
-			textarea.disabled = 'disabled';
-			return;
+			textarea.addEventListener('keyup', () => this.changeTextBlock());
+			textarea.addEventListener('input', () => this.changeTextBlock());
 		}
+	}
 
-		this.addStyleForINput();
+	addEventButton () {
+		let buttons  = this.redactorText.querySelectorAll('button');
+		if (!buttons) return;
 
-		textarea.addEventListener('keyup', () => this.changeTextBlock());
-		textarea.addEventListener('input', () => this.changeTextBlock());
+		for(let i = 0; i < buttons.length; i++) {
+			buttons[i].addEventListener('click', (e) => this.changeStyleForButton(e.target))
+		}
+	}
+
+	changeStyleForButton (el) {
+		el.classList.toggle('redactorHTML__button_action-style');
+
+		if (el.classList.contains('redactorHTML__button_action-style')) {
+			this.block.style[el.dataset.style] = el.dataset.value;
+		} else {
+			this.block.style[el.dataset.style] = '';
+		}
 	}
 
 	changeTextBlock () {
@@ -74,13 +94,7 @@ class Action {
 	}
 
 	getTextBlock () {
-		if (this.block) {
-			return this.block.children.length == 0 ? 
-						this.block.innerHTML :
-						`блок имеет дочерние элементы!!!`
-		} else {
-			return `блок не выбран`
-		}
+		return this.block ? this.block.innerHTML :  'undefined'
 	}
 
 	disactiveRedactor () {
@@ -92,10 +106,12 @@ class Action {
 	}
 
 	activeStyle () {
+		if (!this._redactor) return;
+
 		let inputs = this.redactorText.querySelectorAll('input');
 
 		for (let i = 0; i < inputs.length; i++) {
-			if (inputs[i].value) {
+			if (inputs[i].value && inputs[i].value != window.getComputedStyle(this.block)[inputs[i].dataset.style]) {
 				this.block.style[inputs[i].dataset.style] = inputs[i].value;
 			}
 		}
@@ -146,25 +162,30 @@ class Action {
 		let inputs = this.redactorText.querySelectorAll('input');
 
 		for (let i = 0; i < inputs.length; i++) {
-			if (this.block.style[inputs[i].dataset.style]) {
-				inputs[i].value = this.block.style[inputs[i].dataset.style]
-			}
+			inputs[i].value = window.getComputedStyle(this.block)[inputs[i].dataset.style]
 		}
 	}
 
 	get redactorTemplate () {
-		return `
-			<nav>${this.redactorNav}</nav>
-			<textarea id="redactorTextarea">${this.getTextBlock()}</textarea>
+		return `${this.getTextBlock() == `undefined`?
+					'Блок не подходит или не выбран для редактирования текста!':
+					`<nav>${this.redactorNav}</nav>
+					${this.block.children.length == 0 ? `<textarea id="redactorTextarea">${this.getTextBlock()}</textarea>`: ''}`}
 		`
 	}
 
 	get redactorNav () {
 		return this.redactorElements.reduce((list, el) => {
-			list += `<div>
+			if (el.type == 'input') {
+				list += `<div>
 						<label>${el.title}: </label>
 						${el.type == 'input' ? `<input type="text" data-style="${el.style}" />` : ''}
 					</div>`;
+			} else if (el.type == 'button')	{
+				list += `<div>
+							<button data-style="${el.style}" data-value="${el.value}">${el.title}</button>
+						</div>`
+			}
 
 			return list;		
 		}, '');
@@ -178,14 +199,26 @@ class Action {
 				type: 'input'
 			},
 			{
-				title: 'bgc',
+				title: 'backgroundColor',
 				style: 'backgroundColor',
+				type: 'input',
+			},
+			{
+				title: 'font-size',
+				style: 'fontSize',
 				type: 'input'
 			},
 			{
-				title: 'fsz',
-				style: 'font-size',
-				type: 'input'
+				title: 'Жирный',
+				style: 'fontWeight',
+				value: 'bold',
+				type: 'button'
+			},
+			{
+				title: 'Курсив',
+				style: 'fontStyle',
+				value: 'italic',
+				type: 'button'
 			}
 		]
 	}
