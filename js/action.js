@@ -35,28 +35,28 @@ var Action = function () {
 			}
 
 			if (this._redactor) {
-				var textarea = this.redactorText.querySelector('textarea');
-				textarea.innerHTML = this.getTextBlock();
+				this.redactorText.innerHTML = this.redactorTemplate;
 
-				if (textarea.innerHTML == 'блок имеет дочерние элементы!!!' || textarea.innerHTML == 'блок не выбран') {
-					textarea.disabled = 'disabled';
-				} else {
-					textarea.removeAttribute('disabled');
-				}
+				this.addEventTextarea();
+				this.addEventButton();
 			}
 		}
 	}, {
 		key: 'disactiveBlock',
 		value: function disactiveBlock() {
-			if (this.block) this.block.classList.remove('redactorHTML__action-block');
+			if (this.block) {
+				this.block.classList.remove('redactorHTML__action-block');
 
-			this.block = undefined;
+				this.block = undefined;
+
+				if (this.redactorText) {
+					this.redactorText.innerHTML = this.redactorTemplate;
+				}
+			}
 		}
 	}, {
 		key: 'redactor',
 		value: function redactor(nav) {
-			var _this = this;
-
 			this._redactor = true;
 
 			this.redactorText = document.createElement('div');
@@ -66,21 +66,50 @@ var Action = function () {
 			this.redactorText.innerHTML = this.redactorTemplate;
 			nav.appendChild(this.redactorText);
 
+			this.addEventTextarea();
+			this.addEventButton();
+		}
+	}, {
+		key: 'addEventTextarea',
+		value: function addEventTextarea() {
+			var _this = this;
+
 			var textarea = this.redactorText.querySelector('textarea');
+			if (textarea) {
+				this.addStyleForINput();
 
-			if (textarea.innerHTML == 'блок имеет дочерние элементы!!!' || textarea.innerHTML == 'блок не выбран') {
-				textarea.disabled = 'disabled';
-				return;
+				textarea.addEventListener('keyup', function () {
+					return _this.changeTextBlock();
+				});
+				textarea.addEventListener('input', function () {
+					return _this.changeTextBlock();
+				});
 			}
+		}
+	}, {
+		key: 'addEventButton',
+		value: function addEventButton() {
+			var _this2 = this;
 
-			this.addStyleForINput();
+			var buttons = this.redactorText.querySelectorAll('button');
+			if (!buttons) return;
 
-			textarea.addEventListener('keyup', function () {
-				return _this.changeTextBlock();
-			});
-			textarea.addEventListener('input', function () {
-				return _this.changeTextBlock();
-			});
+			for (var i = 0; i < buttons.length; i++) {
+				buttons[i].addEventListener('click', function (e) {
+					return _this2.changeStyleForButton(e.target);
+				});
+			}
+		}
+	}, {
+		key: 'changeStyleForButton',
+		value: function changeStyleForButton(el) {
+			el.classList.toggle('redactorHTML__button_action-style');
+
+			if (el.classList.contains('redactorHTML__button_action-style')) {
+				this.block.style[el.dataset.style] = el.dataset.value;
+			} else {
+				this.block.style[el.dataset.style] = '';
+			}
 		}
 	}, {
 		key: 'changeTextBlock',
@@ -92,11 +121,7 @@ var Action = function () {
 	}, {
 		key: 'getTextBlock',
 		value: function getTextBlock() {
-			if (this.block) {
-				return this.block.children.length == 0 ? this.block.innerHTML : '\u0431\u043B\u043E\u043A \u0438\u043C\u0435\u0435\u0442 \u0434\u043E\u0447\u0435\u0440\u043D\u0438\u0435 \u044D\u043B\u0435\u043C\u0435\u043D\u0442\u044B!!!';
-			} else {
-				return '\u0431\u043B\u043E\u043A \u043D\u0435 \u0432\u044B\u0431\u0440\u0430\u043D';
-			}
+			return this.block ? this.block.innerHTML : 'undefined';
 		}
 	}, {
 		key: 'disactiveRedactor',
@@ -110,10 +135,12 @@ var Action = function () {
 	}, {
 		key: 'activeStyle',
 		value: function activeStyle() {
+			if (!this._redactor) return;
+
 			var inputs = this.redactorText.querySelectorAll('input');
 
 			for (var i = 0; i < inputs.length; i++) {
-				if (inputs[i].value) {
+				if (inputs[i].value && inputs[i].value != window.getComputedStyle(this.block)[inputs[i].dataset.style]) {
 					this.block.style[inputs[i].dataset.style] = inputs[i].value;
 				}
 			}
@@ -167,21 +194,23 @@ var Action = function () {
 			var inputs = this.redactorText.querySelectorAll('input');
 
 			for (var i = 0; i < inputs.length; i++) {
-				if (this.block.style[inputs[i].dataset.style]) {
-					inputs[i].value = this.block.style[inputs[i].dataset.style];
-				}
+				inputs[i].value = window.getComputedStyle(this.block)[inputs[i].dataset.style];
 			}
 		}
 	}, {
 		key: 'redactorTemplate',
 		get: function get() {
-			return '\n\t\t\t<nav>' + this.redactorNav + '</nav>\n\t\t\t<textarea id="redactorTextarea">' + this.getTextBlock() + '</textarea>\n\t\t';
+			return (this.getTextBlock() == 'undefined' ? 'Блок не подходит или не выбран для редактирования текста!' : '<nav>' + this.redactorNav + '</nav>\n\t\t\t\t\t' + (this.block.children.length == 0 ? '<textarea id="redactorTextarea">' + this.getTextBlock() + '</textarea>' : '')) + '\n\t\t';
 		}
 	}, {
 		key: 'redactorNav',
 		get: function get() {
 			return this.redactorElements.reduce(function (list, el) {
-				list += '<div>\n\t\t\t\t\t\t<label>' + el.title + ': </label>\n\t\t\t\t\t\t' + (el.type == 'input' ? '<input type="text" data-style="' + el.style + '" />' : '') + '\n\t\t\t\t\t</div>';
+				if (el.type == 'input') {
+					list += '<div>\n\t\t\t\t\t\t<label>' + el.title + ': </label>\n\t\t\t\t\t\t' + (el.type == 'input' ? '<input type="text" data-style="' + el.style + '" />' : '') + '\n\t\t\t\t\t</div>';
+				} else if (el.type == 'button') {
+					list += '<div>\n\t\t\t\t\t\t\t<button data-style="' + el.style + '" data-value="' + el.value + '">' + el.title + '</button>\n\t\t\t\t\t\t</div>';
+				}
 
 				return list;
 			}, '');
@@ -194,13 +223,23 @@ var Action = function () {
 				style: 'color',
 				type: 'input'
 			}, {
-				title: 'bgc',
+				title: 'backgroundColor',
 				style: 'backgroundColor',
 				type: 'input'
 			}, {
-				title: 'fsz',
-				style: 'font-size',
+				title: 'font-size',
+				style: 'fontSize',
 				type: 'input'
+			}, {
+				title: 'Жирный',
+				style: 'fontWeight',
+				value: 'bold',
+				type: 'button'
+			}, {
+				title: 'Курсив',
+				style: 'fontStyle',
+				value: 'italic',
+				type: 'button'
 			}];
 		}
 	}]);

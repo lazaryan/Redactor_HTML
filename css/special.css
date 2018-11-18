@@ -19,6 +19,8 @@
   padding: 5px; }
   .redactorHTML__button_action {
     background-color: #FF9D83; }
+  .redactorHTML__button_action-style {
+    background-color: #888888; }
 
 .redactorHTML__action-block {
   border: 5px solid #F2FC55; }
