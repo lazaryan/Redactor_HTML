@@ -40,11 +40,14 @@ gulp.task('styles', () => {
 });
 
 gulp.task('js', () => {
-    gulp.src('src/js/**/*.*')
+    gulp.src('src/js/**/*.js')
         .pipe(plumber())
         .pipe(babel({
             presets: ['env']
         }))
+        .pipe(gulp.dest('./dist/js'));
+
+    gulp.src('src/js/**/*.json')
         .pipe(gulp.dest('./dist/js'));
 });
 

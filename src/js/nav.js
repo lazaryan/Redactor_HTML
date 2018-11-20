@@ -10,8 +10,6 @@ class Nav {
 
 		this.createNav();
 		this.createEventsClick();
-
-		this.action = new Action();
 	}
 
 	initBody (el) {

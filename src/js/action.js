@@ -62,6 +62,7 @@ class Action {
 		let textarea = this.redactorText.querySelector('textarea');
 		if (textarea){
 			this.addStyleForINput();
+			this.addValueForSelect();
 
 			textarea.addEventListener('keyup', () => this.changeTextBlock());
 			textarea.addEventListener('input', () => this.changeTextBlock());
@@ -93,12 +94,33 @@ class Action {
 		this.block.innerHTML = textarea.value;
 	}
 
+	changeTag () {
+		let select = this.redactorText ? this.redactorText.querySelector('select') : false;
+
+		if (!select || select.value == this.block.localname) return;
+
+		let newNode = document.createElement(select.value);
+
+		this.block.parentNode.insertBefore(newNode, this.block);
+
+		for(let i = 0, attrs = this.block.attributes, count = attrs.length; i < count; i++) {
+			newNode.setAttribute(attrs[i].name, attrs[i].value);
+		}
+
+		newNode.innerHTML = this.block.innerHTML;
+
+		this.block.parentNode.removeChild(this.block);
+
+		this.block = newNode;
+	}
+
 	getTextBlock () {
 		return this.block ? this.block.innerHTML :  'undefined'
 	}
 
 	disactiveRedactor () {
 		this.activeStyle();
+		this.changeTag();
 		this._redactor = false;
 
 		this.redactorText.parentNode.removeChild(this.redactorText);
@@ -111,25 +133,32 @@ class Action {
 		let inputs = this.redactorText.querySelectorAll('input');
 
 		for (let i = 0; i < inputs.length; i++) {
-			if (inputs[i].value && inputs[i].value != window.getComputedStyle(this.block)[inputs[i].dataset.style]) {
-				this.block.style[inputs[i].dataset.style] = inputs[i].value;
+			if (!inputs[i].dataset.for) {
+				if (inputs[i].value && inputs[i].value != window.getComputedStyle(this.block)[inputs[i].dataset.style]) {
+					this.block.style[inputs[i].dataset.style] = inputs[i].value;
+				}
+			} else {
+				if (inputs[i].value && inputs[i].value != this.block[inputs[i].dataset.tag]) {
+					this.block[inputs[i].dataset.tag] = inputs[i].value;
+				}
 			}
 		}
 	}
 
 	save () {
 		this.activeStyle();
+		this.changeTag();
 
 		let path = window.location.pathname;
-		if(path == '\/') path = 'index.html';
+		if(path == '\/') path = this.main.data['defaul_index_file'];
 
 		let text = this.getTextFiles();
 
 		let xhr = new XMLHttpRequest();
 
- 		xhr.open('POST', '../main.php', true);
+ 		xhr.open('POST', this.main.data.path + this.main.data["name_file"], true);
  		xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    	xhr.send("path="+path+"&&"+"html=" + encodeURIComponent(text));
+    	xhr.send("path="+path+"&&html="+text+"&&key="+this.main.data.key.toString());
 
  		xhr.onreadystatechange = function() {
   			if (xhr.readyState != 4) return;
@@ -162,8 +191,29 @@ class Action {
 		let inputs = this.redactorText.querySelectorAll('input');
 
 		for (let i = 0; i < inputs.length; i++) {
-			inputs[i].value = window.getComputedStyle(this.block)[inputs[i].dataset.style]
+			if (!inputs[i].dataset.for) {
+				inputs[i].value = window.getComputedStyle(this.block)[inputs[i].dataset.style]
+			} else {
+				inputs[i].value = this.block[inputs[i].dataset.tag]
+			}
 		}
+	}
+
+	addValueForSelect () {
+		let select = this.redactorText.querySelector('select');
+
+		for (let i = 0; i < select.options.length; i++) {
+			if (select.options[i].value == this.block.localName) {
+				select.options[i].selected = true;
+				return;
+			}
+		}
+
+		let op = document.createElement('option');
+		op.innerHTML = this.block.localName;
+		op.selected = true;
+
+		select.appendChild(op);
 	}
 
 	get redactorTemplate () {
@@ -178,12 +228,28 @@ class Action {
 		return this.redactorElements.reduce((list, el) => {
 			if (el.type == 'input') {
 				list += `<div>
-						<label>${el.title}: </label>
-						${el.type == 'input' ? `<input type="text" data-style="${el.style}" />` : ''}
-					</div>`;
+						${el.for ? 
+							`${el.for == this.block.localName ? 
+								`<label>${el.title}: </label>
+								${el.type == 'input' ? `<input type="text" data-style="${el.style}" data-for="${el.for}" data-tag="${el.tag}"/>` : ''}`: ''}`:
+							`<label>${el.title}: </label>
+							${el.type == 'input' ? `<input type="text" data-style="${el.style}"/>` : ''}`
+						}
+					</div>`
 			} else if (el.type == 'button')	{
 				list += `<div>
 							<button data-style="${el.style}" data-value="${el.value}">${el.title}</button>
+						</div>`
+			} else if (el.type == 'select' && this.block.children.length == 0) {
+				list += `<div>
+							<span>${el.title}</span>
+							<select>
+								${el.options.reduce((op, el) => {
+									op += `<option>${el}</option>`;
+
+									return op;
+								}, '')}
+							</select>
 						</div>`
 			}
 
@@ -219,6 +285,19 @@ class Action {
 				style: 'fontStyle',
 				value: 'italic',
 				type: 'button'
+			},
+			{
+				title: 'src',
+				for: 'img',
+				tag: 'src',
+				type: 'input'
+			},
+			{
+				title: 'Тэг',
+				type: 'select',
+				options: [
+					'p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'
+				]
 			}
 		]
 	}
