@@ -260,17 +260,17 @@ class Action {
 	get redactorElements () {
 		return [
 			{
-				title: 'colorText',
+				title: 'цвет текста',
 				style: 'color',
 				type: 'input'
 			},
 			{
-				title: 'backgroundColor',
-				style: 'backgroundColor',
+				title: 'фон',
+				style: 'background',
 				type: 'input',
 			},
 			{
-				title: 'font-size',
+				title: 'размер шрифта',
 				style: 'fontSize',
 				type: 'input'
 			},
@@ -287,7 +287,7 @@ class Action {
 				type: 'button'
 			},
 			{
-				title: 'src',
+				title: 'путь картинки',
 				for: 'img',
 				tag: 'src',
 				type: 'input'
