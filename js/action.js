@@ -77,6 +77,7 @@ var Action = function () {
 			var textarea = this.redactorText.querySelector('textarea');
 			if (textarea) {
 				this.addStyleForINput();
+				this.addValueForSelect();
 
 				textarea.addEventListener('keyup', function () {
 					return _this.changeTextBlock();
@@ -119,6 +120,27 @@ var Action = function () {
 			this.block.innerHTML = textarea.value;
 		}
 	}, {
+		key: 'changeTag',
+		value: function changeTag() {
+			var select = this.redactorText ? this.redactorText.querySelector('select') : false;
+
+			if (!select || select.value == this.block.localname) return;
+
+			var newNode = document.createElement(select.value);
+
+			this.block.parentNode.insertBefore(newNode, this.block);
+
+			for (var i = 0, attrs = this.block.attributes, count = attrs.length; i < count; i++) {
+				newNode.setAttribute(attrs[i].name, attrs[i].value);
+			}
+
+			newNode.innerHTML = this.block.innerHTML;
+
+			this.block.parentNode.removeChild(this.block);
+
+			this.block = newNode;
+		}
+	}, {
 		key: 'getTextBlock',
 		value: function getTextBlock() {
 			return this.block ? this.block.innerHTML : 'undefined';
@@ -127,6 +149,7 @@ var Action = function () {
 		key: 'disactiveRedactor',
 		value: function disactiveRedactor() {
 			this.activeStyle();
+			this.changeTag();
 			this._redactor = false;
 
 			this.redactorText.parentNode.removeChild(this.redactorText);
@@ -140,8 +163,14 @@ var Action = function () {
 			var inputs = this.redactorText.querySelectorAll('input');
 
 			for (var i = 0; i < inputs.length; i++) {
-				if (inputs[i].value && inputs[i].value != window.getComputedStyle(this.block)[inputs[i].dataset.style]) {
-					this.block.style[inputs[i].dataset.style] = inputs[i].value;
+				if (!inputs[i].dataset.for) {
+					if (inputs[i].value && inputs[i].value != window.getComputedStyle(this.block)[inputs[i].dataset.style]) {
+						this.block.style[inputs[i].dataset.style] = inputs[i].value;
+					}
+				} else {
+					if (inputs[i].value && inputs[i].value != this.block[inputs[i].dataset.tag]) {
+						this.block[inputs[i].dataset.tag] = inputs[i].value;
+					}
 				}
 			}
 		}
@@ -149,17 +178,18 @@ var Action = function () {
 		key: 'save',
 		value: function save() {
 			this.activeStyle();
+			this.changeTag();
 
 			var path = window.location.pathname;
-			if (path == '\/') path = 'index.html';
+			if (path == '\/') path = this.main.data['defaul_index_file'];
 
 			var text = this.getTextFiles();
 
 			var xhr = new XMLHttpRequest();
 
-			xhr.open('POST', '../main.php', true);
+			xhr.open('POST', this.main.data.path + this.main.data["name_file"], true);
 			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-			xhr.send("path=" + path + "&&" + "html=" + encodeURIComponent(text));
+			xhr.send("path=" + path + "&&html=" + text + "&&key=" + this.main.data.key.toString());
 
 			xhr.onreadystatechange = function () {
 				if (xhr.readyState != 4) return;
@@ -194,8 +224,30 @@ var Action = function () {
 			var inputs = this.redactorText.querySelectorAll('input');
 
 			for (var i = 0; i < inputs.length; i++) {
-				inputs[i].value = window.getComputedStyle(this.block)[inputs[i].dataset.style];
+				if (!inputs[i].dataset.for) {
+					inputs[i].value = window.getComputedStyle(this.block)[inputs[i].dataset.style];
+				} else {
+					inputs[i].value = this.block[inputs[i].dataset.tag];
+				}
 			}
+		}
+	}, {
+		key: 'addValueForSelect',
+		value: function addValueForSelect() {
+			var select = this.redactorText.querySelector('select');
+
+			for (var i = 0; i < select.options.length; i++) {
+				if (select.options[i].value == this.block.localName) {
+					select.options[i].selected = true;
+					return;
+				}
+			}
+
+			var op = document.createElement('option');
+			op.innerHTML = this.block.localName;
+			op.selected = true;
+
+			select.appendChild(op);
 		}
 	}, {
 		key: 'redactorTemplate',
@@ -205,11 +257,19 @@ var Action = function () {
 	}, {
 		key: 'redactorNav',
 		get: function get() {
+			var _this3 = this;
+
 			return this.redactorElements.reduce(function (list, el) {
 				if (el.type == 'input') {
-					list += '<div>\n\t\t\t\t\t\t<label>' + el.title + ': </label>\n\t\t\t\t\t\t' + (el.type == 'input' ? '<input type="text" data-style="' + el.style + '" />' : '') + '\n\t\t\t\t\t</div>';
+					list += '<div>\n\t\t\t\t\t\t' + (el.for ? '' + (el.for == _this3.block.localName ? '<label>' + el.title + ': </label>\n\t\t\t\t\t\t\t\t' + (el.type == 'input' ? '<input type="text" data-style="' + el.style + '" data-for="' + el.for + '" data-tag="' + el.tag + '"/>' : '') : '') : '<label>' + el.title + ': </label>\n\t\t\t\t\t\t\t' + (el.type == 'input' ? '<input type="text" data-style="' + el.style + '"/>' : '')) + '\n\t\t\t\t\t</div>';
 				} else if (el.type == 'button') {
 					list += '<div>\n\t\t\t\t\t\t\t<button data-style="' + el.style + '" data-value="' + el.value + '">' + el.title + '</button>\n\t\t\t\t\t\t</div>';
+				} else if (el.type == 'select' && _this3.block.children.length == 0) {
+					list += '<div>\n\t\t\t\t\t\t\t<span>' + el.title + '</span>\n\t\t\t\t\t\t\t<select>\n\t\t\t\t\t\t\t\t' + el.options.reduce(function (op, el) {
+						op += '<option>' + el + '</option>';
+
+						return op;
+					}, '') + '\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</div>';
 				}
 
 				return list;
@@ -240,6 +300,15 @@ var Action = function () {
 				style: 'fontStyle',
 				value: 'italic',
 				type: 'button'
+			}, {
+				title: 'src',
+				for: 'img',
+				tag: 'src',
+				type: 'input'
+			}, {
+				title: 'Тэг',
+				type: 'select',
+				options: ['p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 			}];
 		}
 	}]);

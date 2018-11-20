@@ -18,8 +18,6 @@ var Nav = function () {
 
 		this.createNav();
 		this.createEventsClick();
-
-		this.action = new Action();
 	}
 
 	_createClass(Nav, [{

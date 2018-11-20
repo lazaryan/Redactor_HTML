@@ -14,7 +14,10 @@ var Redactor = function () {
 	function Redactor(el) {
 		_classCallCheck(this, Redactor);
 
+		this.data = {};
+
 		this.initBody(el);
+		this.getData();
 		this.createLink('css/special.css');
 
 		this.action = new Action(this);
@@ -35,6 +38,27 @@ var Redactor = function () {
 			link.href = src;
 
 			document.querySelector('body').appendChild(link);
+		}
+	}, {
+		key: 'getData',
+		value: function getData() {
+			var xhr = new XMLHttpRequest();
+			xhr.overrideMimeType("application/json");
+
+			xhr.open('GET', 'js/data.json', true);
+
+			xhr.onreadystatechange = function () {
+				if (xhr.readyState != 4) return;
+
+				if (xhr.status != 200) {
+					console.warn(xhr.status + ': ' + xhr.statusText);
+				} else {
+					var data = JSON.parse(xhr.responseText);
+					this.data = data;
+				}
+			}.bind(this);
+
+			xhr.send();
 		}
 	}]);
 
