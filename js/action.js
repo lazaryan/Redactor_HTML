@@ -279,15 +279,15 @@ var Action = function () {
 		key: 'redactorElements',
 		get: function get() {
 			return [{
-				title: 'colorText',
+				title: 'цвет текста',
 				style: 'color',
 				type: 'input'
 			}, {
-				title: 'backgroundColor',
-				style: 'backgroundColor',
+				title: 'фон',
+				style: 'background',
 				type: 'input'
 			}, {
-				title: 'font-size',
+				title: 'размер шрифта',
 				style: 'fontSize',
 				type: 'input'
 			}, {
@@ -301,7 +301,7 @@ var Action = function () {
 				value: 'italic',
 				type: 'button'
 			}, {
-				title: 'src',
+				title: 'путь картинки',
 				for: 'img',
 				tag: 'src',
 				type: 'input'
