@@ -220,7 +220,7 @@ class Action {
 		return `${this.getTextBlock() == `undefined`?
 					'Блок не подходит или не выбран для редактирования текста!':
 					`<nav>${this.redactorNav}</nav>
-					${this.block.children.length == 0 ? `<textarea id="redactorTextarea">${this.getTextBlock()}</textarea>`: ''}`}
+					${this.block.children.length == 0 && this.block.localName != 'img' ? `<textarea id="redactorTextarea">${this.getTextBlock()}</textarea>`: ''}`}
 		`
 	}
 
@@ -240,9 +240,9 @@ class Action {
 				list += `<div>
 							<button data-style="${el.style}" data-value="${el.value}">${el.title}</button>
 						</div>`
-			} else if (el.type == 'select' && this.block.children.length == 0) {
+			} else if (el.type == 'select' && this.block.children.length == 0 && this.block.localName != 'img') {
 				list += `<div>
-							<span>${el.title}</span>
+							<span>${el.title}: </span>
 							<select>
 								${el.options.reduce((op, el) => {
 									op += `<option>${el}</option>`;
@@ -275,6 +275,12 @@ class Action {
 				type: 'input'
 			},
 			{
+				title: 'путь картинки',
+				for: 'img',
+				tag: 'src',
+				type: 'input'
+			},
+			{
 				title: 'Жирный',
 				style: 'fontWeight',
 				value: 'bold',
@@ -287,13 +293,7 @@ class Action {
 				type: 'button'
 			},
 			{
-				title: 'путь картинки',
-				for: 'img',
-				tag: 'src',
-				type: 'input'
-			},
-			{
-				title: 'Тэг',
+				title: 'тэг',
 				type: 'select',
 				options: [
 					'p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'

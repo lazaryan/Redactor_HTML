@@ -13,6 +13,9 @@
 		border: none
 		background-color: #83A9FF
 		padding: 5px
+		font-size: 17px
+		margin: 3px
+		border: 1px solid #222
 		
 		&_action
 			background-color: #FF9D83
@@ -21,4 +24,42 @@
 			background-color: #888888 	
 	
 	&__action-block
-		border: 5px solid #F2FC55	
+		border: 5px solid #F2FC55
+		
+	&__redactor
+		margin-top: 10px
+		font-size: 20px
+		
+		nav
+			width: 330px
+			
+			&::after
+				content: ''
+				display: block
+				clear: both
+			
+			div
+				float: right
+				margin: 5px 2px
+				
+				button
+					font-size: 13px
+					padding: 2px
+				
+				input
+					font-size: 13px
+					padding: 2px
+				
+				select
+					font-size: 13px
+					padding: 2px
+		
+		textarea
+			width: 100%
+			height: 90px
+			display: block
+			margin: 8px auto
+			font-size: 15px
+			padding: 2px
+			box-sizing: border-box
+			resize: none				
